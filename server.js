@@ -1,3 +1,7 @@
+// I guess that's the main function, 
+// I kept updating the code until jshint was pleased, 
+// if you don't know what jshint is or don't care just remove them
+// and don't forget to remove the matching stuff " })();" in the end of the file
 (function() {
 'use strict';
 
@@ -10,7 +14,8 @@ const hostname = '127.0.0.1';
 const port = 3000;
 const websiteDirectory = 'www';
 
-
+// I'm not smart enough to create this table,
+// The smart guy's answer is here  https://stackoverflow.com/questions/16333790/node-js-quick-file-server-static-files-over-http/29046869#29046869
 const EXT_MAP = {
   '.ico': 'image/x-icon',
   '.html': 'text/html',
@@ -42,6 +47,7 @@ server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
 
+// Logic to handle get requests
 function serveGetRequest(req, res) {
   // parse URL
   const parsedUrl = url.parse(req.url);
@@ -52,6 +58,7 @@ function serveGetRequest(req, res) {
   if (pathname === '/') {
     pathname = './index.html';
   }
+
   // based on the URL path, extract the file extension. e.g. .js, .doc, ...
   const fileName = path.parse(path.basename(pathname));
 
@@ -60,19 +67,26 @@ function serveGetRequest(req, res) {
     var filePath = path.join(__dirname, websiteDirectory, fileName.base);
     var data = fs.readFileSync(filePath);
 
+    // Send response including requested file
     res.setHeader('Content-Type', parseContentType(fileName.base));
     res.write(data);
     res.end();
   } catch (err) {
     console.error(err);
-    res.statusCode = 404;
+    res.statusCode = 404;   // file not found error code, to be displayed in browser
     res.end(`File ${pathname} not found!`);
   }
 }
 
+// Logic to handle post requests
 function servePostRequest(req, res) {
   var body = '';
-
+  
+  // HTTP is stream based, data arrives in multiple chunks,
+  // on('data') will keep getting called until all data is transferred 
+  // through POST request, then on('end') will be called.
+  // POST requests might include files or whatever, that's another reason
+  // to keep code here intact.
   req.on('data', function(data) {
     body += data;
   });
@@ -84,6 +98,7 @@ function servePostRequest(req, res) {
   });
 }
 
+// Match the requested filename with content type header
 function parseContentType(filename) {
   const ext = path.parse(filename).ext;
   return EXT_MAP[ext] || 'text/html';
