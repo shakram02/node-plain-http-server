@@ -49,7 +49,7 @@ function serveGetRequest(req, res) {
   let pathname = parsedUrl.pathname;
 
   // Index page requested
-  if (pathname == '/') {
+  if (pathname === '/') {
     pathname = './index.html';
   }
   // based on the URL path, extract the file extension. e.g. .js, .doc, ...
@@ -77,9 +77,10 @@ function servePostRequest(req, res) {
     body += data;
   });
 
-  req.on('end', function(data) {
+  req.on('end', function() {
     var parsedData = JSON.parse(body);
-    console.log('Post request:' + parsedData);
+    console.debug('Post request:');
+    console.debug(parsedData);
   });
 }
 
